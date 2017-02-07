@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Mastrilli Converter</title>
+    <link rel="stylesheet" href="css/master.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-sweetalert/1.0.1/sweetalert.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/autolinker/1.4.0/Autolinker.min.js"></script>
+    <script type="text/javascript">
+    function compare(a,b){
+      if(a.pos < b.pos){
+      return -1
+    }
+    if(a.pos > b.pos){
+    return 1
+  }
+  else {
+    return 0;
+  }
+    };
+
+    $(document).ready(function() {
+        var g =0;
+        var jdata = [];
+      $('.convert').on('click', function(){
+
+        var url = $('.link').val() + ".json";
+        $.ajax({
+          type: 'GET',
+          url: url,
+          dataType: 'json',
+          success: function(data) { jdata = data;},
+          async: false
+        })
+
+        $('.box').val('<h2><b>'+ jdata.name + '</b></h2><br/><p>'+Autolinker.link(jdata.desc)+'</p>');
+
+        if(jdata.checklists){
+          jdata.checklists.sort(compare);
+          for(var i=0; i< jdata.checklists.length; i++){
+            $('.box').val($('.box').val() + "<h3><u>"+ jdata.checklists[i].name + "</u></h3><br/>");
+            while(g< jdata.checklists[i].checkItems.length){
+              $('.box').val($('.box').val() + "<input type='checkbox'>"+ Autolinker.link(jdata.checklists[i].checkItems[g].name) + "</input><br/>");
+              g++;
+            }
+            g=0;
+          }
+        }
+  window.prompt("Copy to clipboard: Ctrl+C, Enter", $('.box').val());
+      });
+    });
+
+
+    </script>
+  </head>
+  <body>
+    <div class="container-fluid">
+    <div class="row vertical-align">
+        <div class="col-xs-12 text-center">
+          <h2>Input Trello Link Below</h2>
+          <input type="text" name="Link" placeholder="Trello Card Link" class="link">
+          <button type="button" name="button" class="btn btn-primary convert">Convert</button>
+          <input type="text" name="" class="box" style="display:none;">
+        </div>
+    </div>
+</div>
+  </body>
+</html>
